@@ -7,7 +7,11 @@ exports.createAccount = async (req, res) => {
         const user = await userService.createAccount(username, email, password);
         return res.status(201).send({ user });
     } catch (error) {
-        res.status(500).send({ "ERROR creating account:": error.message });
+        if(error.name === 'ValidationError'){
+            const validationMsgs = Object.values(error.errors).map(err => err.message);
+            return res.status(400).send({error: validationMsgs.join(', ')});
+        }
+        res.status(500).send({ error : error.message });
     }
 }
 

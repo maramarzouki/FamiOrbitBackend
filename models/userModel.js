@@ -33,12 +33,12 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        validate: [validate_username, 'Invalid username format']
+        validate: [validate_username, 'Invalid username format!']
     },
     email: {
         type: String,
         required: true,
-        validate: [validate_email, "Invalid email format"],
+        validate: [validate_email, "Invalid email format!"],
         unique: true
     },
     password: {

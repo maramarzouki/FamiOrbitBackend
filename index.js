@@ -13,7 +13,7 @@ app.use(morgan('dev'));
 
 app.use('/', userRoutes);
 
-mongoose.connect('mongodb://0.0.0.0:27017/StarTrailApp')
+mongoose.connect('mongodb://0.0.0.0:27017/FamiOrbit')
 
 const port = process.env.PORT || 3001;
 app.listen(port, console.log(`Listening on port ${port}`));
