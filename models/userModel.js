@@ -11,21 +11,21 @@ var validate_username = (username) => {
     return re.test(username);
 };
 
-const validate_phone = (phone) => {
-    const re = /^\+?[1-9]\d{1,14}$/;
-    return re.test(phone);
-};
+// const validate_phone = (phone) => {
+//     const re = /^\+?[1-9]\d{1,14}$/;
+//     return re.test(phone);
+// };
 
 
-const PhoneSchema = new mongoose.Schema({
-    number: {
-        type: Number,
-        required: true,
-        validate: [validate_phone, 'Invalid phone format (use E.164, e.g. +14155552671)'],
-    },
-    verified: { type: Boolean, default: false },
-    addedAt: { type: Date, default: Date.now }
-}, { _id: false });
+// const PhoneSchema = new mongoose.Schema({
+//     number: {
+//         type: Number,
+//         required: true,
+//         validate: [validate_phone, 'Invalid phone format (use E.164, e.g. +14155552671)'],
+//     },
+//     verified: { type: Boolean, default: false },
+//     addedAt: { type: Date, default: Date.now }
+// }, { _id: false });
 
 
 const userSchema = mongoose.Schema({
@@ -46,17 +46,21 @@ const userSchema = mongoose.Schema({
         required: true,
         minLength: 8
     },
-    phoneNumbers: {
-        type: [PhoneSchema],
-        default: []
-    },
+    // phoneNumbers: {
+    //     type: [PhoneSchema],
+    //     default: []
+    // },
     changePasswordCode: {
         type: Number,
         default: 111111
     },
     changePasswordCodeExpiry: {
         type: Number
-    }
+    },
+    children: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'children'
+    }]
 });
 
 userSchema.statics.create_account = async function (username, email, password) {

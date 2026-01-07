@@ -25,29 +25,6 @@ exports.login = async (req, res) => {
     }
 }
 
-exports.addPhoneNumber = async (req, res) => {
-    try {
-        const pn = req.body.phoneNumber;
-        console.log('phoneNumberrrrrrr:', pn);
-        const userID = req.params.userID;
-        const result = await userService.addPhoneNumber(userID, pn);
-        return res.status(201).send(result);
-    } catch (error) {
-        res.status(500).send({ "ERROR adding phone number:": error.message });
-    }
-}
-
-exports.removePhoneNumber = async (req, res) => {
-    try {
-        const phoneNumber = req.body.phoneNumber;
-        const userID = req.params.userID;
-        const r = await userService.removePhoneNumber(userID, phoneNumber);
-        return res.status(200).send(r);
-    } catch (error) {
-        res.status(500).send({ "ERROR removing phone number:": error.message });
-    }
-}
-
 exports.sendResetPasswordCode = async (req, res) => {
     try {
         const email = req.body.email;
@@ -77,3 +54,15 @@ exports.resetPassword = async (req, res) => {
         res.status(500).send({ "ERROR resetting reset password :": error.message });
     }
 }
+
+// exports.addChild = async (req, res) => {
+//     try {
+//         const namee = req.body.name;
+//         console.log("child name:", namee);
+//         const res = await userService.addChild(namee);
+//         console.log(res);
+        
+//     } catch (error) {
+//         res.status(500).send({ "ERROR add child": error.message });
+//     }
+// }

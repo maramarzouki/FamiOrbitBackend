@@ -20,43 +20,6 @@ async function login(email, password) {
     return ({ token, userDetails });
 }
 
-async function addPhoneNumber(userID, phoneNumber) {
-    console.log('phoneNumber variable:', phoneNumber);
-    const alreadyExist = await user.findOne({ _id: userID, 'phoneNumbers.number': phoneNumber });
-    if (alreadyExist) {
-        throw new Error('Phone number already entered!');
-    }
-
-    const newPhoneNumber = { number: phoneNumber, verified: true, addedAt: new Date() }
-
-    const res = await user.findByIdAndUpdate(
-        userID,
-        { $push: { phoneNumbers: newPhoneNumber } },
-        { new: true, projection: { phoneNumbers: { $slice: -1 } } } // returns only the last element
-    );
-
-    if (!res) throw new Error('User not found');
-
-    return res.phoneNumbers[0];
-}
-
-async function removePhoneNumber(userID, phoneNumber) {
-    const exist = await user.findOne({ _id: userID, 'phoneNumbers.number': phoneNumber });
-    if (!exist) {
-        throw new Error('Phone number doesn\'t exist!');
-    }
-
-    const res = await user.findByIdAndUpdate(
-        userID,
-        { $pull: { phoneNumbers: { number: phoneNumber } } },
-        { new: false }
-    );
-    if (!res) {
-        throw new Error('User not found!');
-    }
-    return true;
-}
-
 async function sendResetPasswordCode(email) {
     const fetchedUser = await user.findOne({ email: email });
     if (!fetchedUser) {
@@ -111,4 +74,12 @@ async function resetPassword(email, newPassword) {
         });
 }
 
-module.exports = { createAccount, login, addPhoneNumber, removePhoneNumber, sendResetPasswordCode, verifyResetPasswordCode, resetPassword }
+// async function addChild(name, userID){
+//     const fetchedChild = await user.findOne({ _id: userID, childrenNames: name })
+//     if (!fetchedChild) {
+        
+//     }
+//     return "nothing found";
+// }
+
+module.exports = { createAccount, login, sendResetPasswordCode, verifyResetPasswordCode, resetPassword }
