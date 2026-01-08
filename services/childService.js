@@ -1,12 +1,17 @@
 const child = require('../models/childModel');
 
 async function addChild(parentID, childUsername) {
-    const alreadyExist = await user.findOne({ _id: parentID, childUsername: childUsername });
+    const alreadyExist = await child.findOne({ _id: parentID, childUsername: childUsername });
     if (alreadyExist) {
-        throw new Error('This child already entered!');
+        throw new Error('This child name already used!');
     }
     const newChild = await child.create({ childUsername: childUsername, parentID: parentID });
     return newChild;
+}
+
+async function getAllChildren(parentID) {
+    const children = await child.find({ parentID });
+    return children;
 }
 
 async function addPhoneNumber(childID, phoneNumber) {
@@ -46,4 +51,4 @@ async function removePhoneNumber(childID, phoneNumber) {
     return true;
 }
 
-module.exports = { addChild, addPhoneNumber, removePhoneNumber }
+module.exports = { addChild, getAllChildren, addPhoneNumber, removePhoneNumber }

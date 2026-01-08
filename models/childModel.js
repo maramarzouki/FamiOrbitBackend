@@ -21,7 +21,7 @@ const PhoneSchema = new mongoose.Schema({
 }, { _id: false });
 
 const childSchema = mongoose.Schema ({
-    childUserame:{
+    childUsername:{
         type: String,
         required: true,
         unique: true,

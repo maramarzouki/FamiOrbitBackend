@@ -2,15 +2,31 @@ const childService = require('../services/childService');
 
 exports.addChild = async (req, res) => {
     try {
-        const parentID = req.params.parentID;
-        const { childName } = req.body;
-        const newChild = childService.addChild(parentID, childName);
-        res.status(201).send({ newChild });
+        const { childUsername, parentID } = req.body;
+        const newChild = await childService.addChild(parentID, childUsername);
+        res.status(201).json({ newChild });
     } catch (error) {
         if (error.name === 'ValidationError') {
             const validationMsgs = Object.values(error.errors).map(err => err.message);
             return res.status(400).send({ error: validationMsgs.join(', ') });
+        } else if (error.code === 11000) {
+            return res.status(400).send({ error: 'This child name already used!'});
         }
+        console.log(error.code);
+
+        res.status(500).send({ error: error.message });
+    }
+}
+
+exports.getAllChildren = async (req, res) => {
+    try {
+        const parentID = req.params.parentID;
+        const childrenList = await childService.getAllChildren(parentID);
+        console.log(childrenList);
+        
+        return res.status(200).json({ childrenList });
+    } catch (error) {
+        console.log(error);
         res.status(500).send({ error: error.message });
     }
 }
