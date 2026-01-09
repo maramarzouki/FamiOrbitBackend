@@ -10,7 +10,7 @@ exports.addChild = async (req, res) => {
             const validationMsgs = Object.values(error.errors).map(err => err.message);
             return res.status(400).send({ error: validationMsgs.join(', ') });
         } else if (error.code === 11000) {
-            return res.status(400).send({ error: 'This child name already used!'});
+            return res.status(400).send({ error: 'This child name already used!' });
         }
         console.log(error.code);
 
@@ -23,8 +23,20 @@ exports.getAllChildren = async (req, res) => {
         const parentID = req.params.parentID;
         const childrenList = await childService.getAllChildren(parentID);
         console.log(childrenList);
-        
+
         return res.status(200).json({ childrenList });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error: error.message });
+    }
+}
+
+exports.getChildDetails = async (req, res) => {
+    try {
+        const { parentID, childUsername } = req.params;
+        const fetchedChild = await childService.getChildDetails(parentID, childUsername);
+        console.log(fetchedChild);
+        return res.status(200).json({ fetchedChild });
     } catch (error) {
         console.log(error);
         res.status(500).send({ error: error.message });

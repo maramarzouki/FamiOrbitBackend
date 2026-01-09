@@ -14,6 +14,14 @@ async function getAllChildren(parentID) {
     return children;
 }
 
+async function getChildDetails(parentID, childUsername) {
+    const child = await child.findOne({parentID: parentID, childUsername: childUsername});
+    if(!child){
+        return 'Child not found!';
+    }
+    return child;
+}
+
 async function addPhoneNumber(childID, phoneNumber) {
     console.log('phoneNumber variable:', phoneNumber);
     const alreadyExist = await child.findOne({ _id: childID, 'phoneNumbers.number': phoneNumber });
@@ -51,4 +59,4 @@ async function removePhoneNumber(childID, phoneNumber) {
     return true;
 }
 
-module.exports = { addChild, getAllChildren, addPhoneNumber, removePhoneNumber }
+module.exports = { addChild, getAllChildren, getChildDetails, addPhoneNumber, removePhoneNumber }
