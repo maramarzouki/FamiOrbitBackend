@@ -1,4 +1,6 @@
 const child = require('../models/childModel');
+const twilio = require('twilio');
+const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 
 async function addChild(parentID, childUsername) {
     const alreadyExist = await child.findOne({ _id: parentID, childUsername: childUsername });
@@ -15,8 +17,8 @@ async function getAllChildren(parentID) {
 }
 
 async function getChildDetails(parentID, childUsername) {
-    const child = await child.findOne({parentID: parentID, childUsername: childUsername});
-    if(!child){
+    const child = await child.findOne({ parentID: parentID, childUsername: childUsername });
+    if (!child) {
         return 'Child not found!';
     }
     return child;
@@ -24,33 +26,67 @@ async function getChildDetails(parentID, childUsername) {
 
 async function addPhoneNumber(childID, phoneNumber) {
     console.log('phoneNumber variable:', phoneNumber);
-    const alreadyExist = await child.findOne({ _id: childID, 'phoneNumbers.number': phoneNumber });
+    const alreadyExist = await child.findOne({ _id: childID, 'trustedContacts.number': phoneNumber });
     if (alreadyExist) {
         throw new Error('Phone number already entered!');
     }
 
-    const newPhoneNumber = { number: phoneNumber, verified: true, addedAt: new Date() }
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
+    // const newPhoneNumber = { number: phoneNumber, verified: true, addedAt: new Date() }
+    const newPhoneNumber = {
+        number: phoneNumber,
+        verified: false,
+        addedAt: new Date(),
+        otp: otp, // In production, hash this (e.g., with bcrypt)
+        otpExpiry: otpExpiry
+    };
 
     const res = await child.findByIdAndUpdate(
         childID,
-        { $push: { phoneNumbers: newPhoneNumber } },
-        { new: true, projection: { phoneNumbers: { $slice: -1 } } } // returns only the last element
+        { $push: { trustedContacts: newPhoneNumber } },
+        { new: true, projection: { trustedContacts: { $slice: -1 } } } // returns only the last element
     );
 
     if (!res) throw new Error('User not found');
 
-    return res.phoneNumbers[0];
+    await client.messages.create({
+        body: `Your verification code is ${otp}. Expires in 10 minutes.`,
+        from: process.env.TWILIO_PHONE_NUMBER,
+        to: phoneNumber
+    });
+
+    return { message: 'OTP sent for verification', phone: res.trustedContacts[0] };
+}
+
+async function verifyPhoneNumber(childID, phoneNumber, otp) {
+    const child = await childModel.findOne({ _id: childID, 'trustedContacts.number': phoneNumber });
+    if (!child) throw new Error('Child or phone not found');
+
+    const phoneEntry = child.trustedContacts.find(p => p.number === phoneNumber);
+    if (!phoneEntry || phoneEntry.otp !== otp || phoneEntry.otpExpiry < new Date()) {
+        throw new Error('Invalid or expired OTP');
+    }
+
+    // mark as verified and clear OTP
+    phoneEntry.verified = true;
+    phoneEntry.otp = undefined;
+    phoneEntry.otpExpiry = undefined;
+    await child.save();
+
+    return { message: 'Phone verified successfully' };
 }
 
 async function removePhoneNumber(childID, phoneNumber) {
-    const exist = await user.findOne({ _id: childID, 'phoneNumbers.number': phoneNumber });
+    const exist = await user.findOne({ _id: childID, 'trustedContacts.number': phoneNumber });
     if (!exist) {
         throw new Error('Phone number doesn\'t exist!');
     }
 
     const res = await user.findByIdAndUpdate(
         childID,
-        { $pull: { phoneNumbers: { number: phoneNumber } } },
+        { $pull: { trustedContacts: { number: phoneNumber } } },
         { new: false }
     );
     if (!res) {
@@ -59,4 +95,4 @@ async function removePhoneNumber(childID, phoneNumber) {
     return true;
 }
 
-module.exports = { addChild, getAllChildren, getChildDetails, addPhoneNumber, removePhoneNumber }
+module.exports = { addChild, getAllChildren, getChildDetails, addPhoneNumber, verifyPhoneNumber, removePhoneNumber }

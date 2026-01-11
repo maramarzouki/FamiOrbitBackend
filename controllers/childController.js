@@ -49,11 +49,24 @@ exports.addPhoneNumber = async (req, res) => {
         console.log('phoneNumberrrrrrr:', pn);
         const childID = req.params.childID;
         const result = await childService.addPhoneNumber(childID, pn);
-        return res.status(201).send(result);
+        return res.status(201).send({ result });
     } catch (error) {
-        res.status(500).send({ "ERROR adding phone number:": error.message });
+        console.log({ error : error.message });
+
+        res.status(500).send({ error: error.message });
     }
 }
+
+exports.verifyPhoneNumber = async (req, res) => {
+    try {
+        const { phoneNumber, otp } = req.body;
+        const childID = req.params.childID;
+        const result = await childService.verifyPhoneNumber(childID, phoneNumber, otp);
+        res.status(200).send(result);
+    } catch (error) {
+        res.status(400).send({ error: error.message });
+    }
+};
 
 exports.removePhoneNumber = async (req, res) => {
     try {

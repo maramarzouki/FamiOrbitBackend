@@ -12,12 +12,13 @@ const validate_phone = (phone) => {
 
 const PhoneSchema = new mongoose.Schema({
     number: {
-        type: Number,
+        type: String,
         required: true,
         validate: [validate_phone, 'Invalid phone format (use E.164, e.g. +14155552671)'],
     },
-    verified: { type: Boolean, default: false },
-    addedAt: { type: Date, default: Date.now }
+    verified: { type: Boolean, default: false },addedAt: { type: Date, default: Date.now },
+    otp: { type: String }, // Temporary OTP (hash it for security)
+    otpExpiry: { type: Date } // When OTP expires
 }, { _id: false });
 
 const childSchema = mongoose.Schema ({
