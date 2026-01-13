@@ -13,7 +13,6 @@ exports.addChild = async (req, res) => {
             return res.status(400).send({ error: 'This child name already used!' });
         }
         console.log(error.code);
-
         res.status(500).send({ error: error.message });
     }
 }
@@ -33,8 +32,8 @@ exports.getAllChildren = async (req, res) => {
 
 exports.getChildDetails = async (req, res) => {
     try {
-        const { parentID, childUsername } = req.params;
-        const fetchedChild = await childService.getChildDetails(parentID, childUsername);
+        const childID = req.params.childID;
+        const fetchedChild = await childService.getChildDetails(childID);
         console.log(fetchedChild);
         return res.status(200).json({ fetchedChild });
     } catch (error) {

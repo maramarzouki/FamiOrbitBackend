@@ -16,12 +16,13 @@ async function getAllChildren(parentID) {
     return children;
 }
 
-async function getChildDetails(parentID, childUsername) {
-    const child = await child.findOne({ parentID: parentID, childUsername: childUsername });
-    if (!child) {
+async function getChildDetails(childID) {
+    console.log(childID);
+    const fetchedChild = await child.findOne({ _id: childID });
+    if (!fetchedChild) {
         return 'Child not found!';
     }
-    return child;
+    return fetchedChild;
 }
 
 async function addPhoneNumber(childID, phoneNumber) {
