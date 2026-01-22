@@ -8,5 +8,6 @@ router.get('/getChildDetails/:childID', childController.getChildDetails);
 router.put('/addPhoneNumber/:childID', childController.addPhoneNumber);
 router.put('/verifyPhoneNumber/:childID', childController.addPhoneNumber);
 router.put('/removePhoneNumber/:childID', childController.removePhoneNumber);
+router.delete('/deleteChild/:childID', childController.deleteChild);
 
 module.exports = router;

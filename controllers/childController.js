@@ -77,3 +77,13 @@ exports.removePhoneNumber = async (req, res) => {
         res.status(500).send({ "ERROR removing phone number:": error.message });
     }
 }
+
+exports.deleteChild = async (req, res) => {
+    try {
+        const id = req.params.childID;
+        const result = await childService.deleteChild(id);
+        return res.status(200).join(result);
+    } catch (error) {
+        res.status(500).send({ "ERROR deleting child:": error.message });
+    }
+}

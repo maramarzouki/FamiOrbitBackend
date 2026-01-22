@@ -80,12 +80,12 @@ async function verifyPhoneNumber(childID, phoneNumber, otp) {
 }
 
 async function removePhoneNumber(childID, phoneNumber) {
-    const exist = await user.findOne({ _id: childID, 'trustedContacts.number': phoneNumber });
+    const exist = await child.findOne({ _id: childID, 'trustedContacts.number': phoneNumber });
     if (!exist) {
         throw new Error('Phone number doesn\'t exist!');
     }
 
-    const res = await user.findByIdAndUpdate(
+    const res = await child.findByIdAndUpdate(
         childID,
         { $pull: { trustedContacts: { number: phoneNumber } } },
         { new: false }
@@ -96,4 +96,14 @@ async function removePhoneNumber(childID, phoneNumber) {
     return true;
 }
 
-module.exports = { addChild, getAllChildren, getChildDetails, addPhoneNumber, verifyPhoneNumber, removePhoneNumber }
+async function deleteChild(childID) {
+    const fetchedChild = await child.findOne({ _id: childID });
+    if (!fetchedChild) {
+        throw new Error('Child not found!');
+    }
+
+    const res = await fetchedChild.delete();
+    return res;
+}
+
+module.exports = { addChild, getAllChildren, getChildDetails, addPhoneNumber, verifyPhoneNumber, removePhoneNumber, deleteChild }
