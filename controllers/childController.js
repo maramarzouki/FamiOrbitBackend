@@ -82,8 +82,10 @@ exports.deleteChild = async (req, res) => {
     try {
         const id = req.params.childID;
         const result = await childService.deleteChild(id);
-        return res.status(200).join(result);
+        return res.status(200).json(result);
     } catch (error) {
+        console.log({ "ERROR deleting child:": error.message });
+        
         res.status(500).send({ "ERROR deleting child:": error.message });
     }
 }

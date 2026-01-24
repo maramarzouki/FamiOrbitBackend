@@ -98,11 +98,13 @@ async function removePhoneNumber(childID, phoneNumber) {
 
 async function deleteChild(childID) {
     const fetchedChild = await child.findOne({ _id: childID });
+    console.log(fetchedChild);
+    
     if (!fetchedChild) {
         throw new Error('Child not found!');
     }
 
-    const res = await fetchedChild.delete();
+    const res = await fetchedChild.deleteOne();
     return res;
 }
 
